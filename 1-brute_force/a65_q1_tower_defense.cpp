@@ -1,20 +1,12 @@
+//
+// Tower Defense
+
 #include <iostream>
-#include <vector>
-#include <map>
 
 using namespace std;
 
+int length, noMonster, noTurret, range;
 
-int lineLength, noMonsters, noTurret, range;
-int monstersIndex, turretIndex;
 int main() {
-    cin >> lineLength >> noMonsters >> noTurret >> range;
-
-    map<int, vector<int>> area;
-    for (int i=0; i<noMonsters; i++) {
-        cin >> monstersIndex
-    }
-
-
-
+    cin >> length >> noMonster >> noTurret >> range;
 }
