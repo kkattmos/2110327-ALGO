@@ -15,12 +15,16 @@ vector<long long> toAdd(3);
 
 void generate(vector<long long> &elements, 
                 vector<bool> &used,
-                int curr) {
+                int curr,
+                int usedCount) {
     
-    if (curr == 3) {
+    if (curr > 3) return;
+    if (usedCount == 3) {
         // TODO: calc the sum, put in results
         long long total = 0;
-        for (const auto &x: toAdd) total += x;
+        for (int i=0; i<noElements; i++) {
+            if (used[i]) total += elements[i];
+        }
 
         if (results.empty()) results.push_back(total);
         else {
@@ -31,14 +35,10 @@ void generate(vector<long long> &elements,
         return;
     }
 
-    for (int i=0; i<noElements; i++) {
-        if (!used[i]) {
-            used[i] = true;
-            toAdd[curr] = elements[i];
-            generate(elements, used, curr+1);
-            used[i] = false;
-        }
-    }
+    used[curr] = false;
+    generate(elements, used, curr+1, usedCount);
+    used[curr] = true;
+    generate(elements, used, curr+1, usedCount+1);
 
 }
 
@@ -51,7 +51,11 @@ int main() {
     for (int i=0; i<noElements; i++) cin >> elements[i];
 
     vector<bool> used(noElements);
-    generate(elements, used, 0);
+    generate(elements, used, 0, 0);
+
+    //Test
+    for (const auto &x: results) cout << x << " ";
+    cout << "\n===========\n";
     
     //Search value
     for (int i=0; i<noQueries; i++) {

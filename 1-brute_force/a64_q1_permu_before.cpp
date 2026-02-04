@@ -1,111 +1,72 @@
-//
+// PPPPPTTTTT
 // Permutation with Constraint
 
 #include <iostream>
 #include <vector>
 
-// การเก็บ forbidden data แบบข้างล่างนี้ อาจ work กับข้อนี้
-//     vector<pair<bool, pair<int, int>>> forbiddenList;
-
-
 using namespace std;
 
-int called;
+// การเก็บ forbidden data แบบข้างล่างนี้ อาจ work กับข้อนี้ -- ทดไว้ก่อน workมั้ยยังไม่เคยลอง
+//     vector<pair<bool, pair<int, int>>> forbiddenList;
 
-bool check(vector<int> &letters,
-            vector<pair<pair<int, int>, int>> &constraints,
-            bool &alreadyInvalid,
-            int &currIndex) {
+int length, noConstraints;
+int t1, t2; // Temporary value for storing start and end constraints
+
+vector<pair<int ,int>> constraintList;
+vector<int> constraintStatus;
+
+bool check(vector<int> &result, int curr) {
     
-    if (constraints.size() == 0) return true;    
-
-    for (auto &c: constraints) {
-        std::cout << "Testing index " << currIndex << " : " << letters[currIndex] << " with " << c.first.first << " " << c.first.second << " status " << c.second << "\n";
-
-        if (c.second == 0) { // Not found
-            if (c.first.second == letters[currIndex]) {
-                cout << "Passed\n";
-                alreadyInvalid = true;
-                return false;
-            }
-            else if (c.first.first == letters[currIndex]) {
-                c.second = 1;
-            }
+    for (int i=0; i<noConstraints; i++) {
+        if (constraintStatus[i] == -1) { //Currently not found
+            if (constraintList[i].second == result[curr]) constraintStatus[i] = curr;
         }
-        else if (c.second == 1) { // Found the start letter
-            if (c.first.second == letters[currIndex]) {
-                c.second = 2;
-            }
-        }
-        else if (c.second == 2) { // Already completed
-            continue;
+        else {
+            if (constraintList[i].first == result[curr]) return false;
         }
     }
     return true;
 }
 
-void recur(int target,
-            int curr,
-            vector<int> &letters,
-            bool &alreadyInvalid,
+void reset(int curr) {
+    for (int i=0; i<noConstraints; i++) {
+        if (constraintStatus[i] == curr) constraintStatus[i] = -1;
+    }
+}
+
+void loop(vector<int> &result,
             vector<bool> &used,
-            vector<pair<pair<int, int>, int>> &constraints,
-            int &called) {
-
-    called++;
+            int curr) {
     
-    if (curr < target) {
-        for (int i=1; i<=target; i++) {
+    if (curr == length) {
+        for (int i=0; i<length; i++) cout << result[i] << " ";
+        cout << "\n";
+    }
 
-            if (curr == 0) cout << "=======\n";
-            if (!used[i]) {
-                used[i] = true;
-                letters[curr] = i-1;
-                
-                
-                if (!check(letters, constraints, alreadyInvalid, curr)) {
-                    cout << "Terminated\n";
-                    for (auto &c: constraints) c.second = 0;
-                    used[i] = false;
-                    return;
-                }
-
-                recur(target, curr+1, letters, alreadyInvalid, used, constraints, called);
-                used[i] = false;
-            }
+    for (int i=1; i<=length; i++) {
+        if (!used[i]) {
+            used[i] = true;
+            result[curr] = i-1;
+            if (check(result, curr)) loop(result, used, curr+1);
+            reset(curr);
+            used[i] = false;
         }
-    }
-
-    else {
-        for (int i=0; i<target; i++) cout << letters[i] << " ";
-        cout << "\n--------------\n";
-        for (auto &c: constraints) c.second = 0;
 
     }
-    
-};
+}
 
-int n, m, a, b;
-// n = number range
-// m = no. constraints
-// a = constraint_start
-// b = constraint_end
-int status = 0;
-bool alreadyInvalid = false;
 int main() {
-    ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
-    cin >> n >> m;
+    ios_base::sync_with_stdio(false); cin.tie(NULL);
+    
+    cin >> length >> noConstraints;
 
-    vector<pair<pair<int, int>, int>> constraints(m);
-    for (int i=0; i<m; i++) {
-        cin >> a >> b;
-        constraints[i] = {{a, b}, 0};
+    for (int i=0; i<noConstraints; i++) {
+        cin >> t1 >> t2;
+        constraintList.push_back({t1, t2});
+        constraintStatus.push_back(-1);
     }
 
-    vector<int> letters(n);
-    vector<bool> used(n);
-    recur(n, 0, letters, alreadyInvalid, used, constraints, called);
-    cout << "Called: " << called;
-
-
+    vector<bool> used(length+1, false);
+    vector<int> result(length);
+    loop(result, used, 0);
 }
