@@ -4,6 +4,10 @@
 #include <iostream>
 #include <vector>
 
+// การเก็บ forbidden data แบบข้างล่างนี้ อาจ work กับข้อนี้
+//     vector<pair<bool, pair<int, int>>> forbiddenList;
+
+
 using namespace std;
 
 int called;
