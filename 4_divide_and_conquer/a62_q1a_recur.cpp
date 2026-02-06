@@ -1,28 +1,41 @@
+// DONE
+// Recur Matrix
+
 #include <iostream>
 #include <vector>
 
 using namespace std;
 
-void recur(vector<vector<int>> &v, int a, int b, int top, in)
+int a, b;
+int matrixSize;
+vector<vector<int>> matrix;
 
-/*
-void cout_recur(int a, int b) {
-    if (a == 0) {
-        cout << b << " ";
+void set_matrix(int size, int top, int right, int value) {
+        
+    if (size == 1) {
+        matrix[top][right] = value;
         return;
     }
 
-    recur(a-1, b);
-    recur(a-1, b-1);
-    cout << "\n";
-    recur(a-1, b+1);
-    recur(a-1, b);
+    int half = size / 2;
+    set_matrix(half, top, right, value);
+    set_matrix(half, top+half, right, value+1);
+    set_matrix(half, top, right+half, value-1);
+    set_matrix(half, top+half, right+half, value);
 }
-*/
 
-int a, b;
 int main() {
     cin >> a >> b;
-    recur(a, b);
+    matrixSize = 1 << a;
+
+    vector<int> tmp(matrixSize, -999);
+    matrix.assign(matrixSize, tmp);
+
+    set_matrix(matrixSize, 0, 0, b);
+    for (int i=0; i<matrixSize; i++) {
+        for (int j=0; j<matrixSize; j++) cout << matrix[i][j] << " ";
+        cout << "\n";
+    }
+
 
 }
