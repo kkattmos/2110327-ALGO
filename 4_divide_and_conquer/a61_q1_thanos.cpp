@@ -1,66 +1,62 @@
-//
+// DONE
 // Thanos (ดีดนิ้ว)
 
 #include <iostream>
 #include <vector>
 #include <map>
-#include <numeric>
+#include <algorithm>
 
 using namespace std;
 
 int expoLength, noAvengers, baseDamage, avengersDamage;
-int actualLength;
+map<long long, int> avengersCount;
+vector<pair<long long, int>> avengersIndex;
 
-vector<int> avengersCount;
-int totalDamage = 0;
+// Idea: when the ranges does not contain avenger, simply return baseDamage
 
-int avengersAttack(vector<int>::iterator start, vector<int>::iterator end) {
-    int avCount = accumulate(start, end+1, 0);
-    cout << "test: " << avCount << "\n";
-    return avengersDamage * avCount * (end-start+1);
-}
+long long getNoAvengers(long long start, long long end) {
+    int inboundAvengerCount = 0;
+    auto currIT = lower_bound(avengersIndex.begin(), avengersIndex.end(), make_pair(start, 0)); 
 
-void updateDamage(int damage) {
-    totalDamage += damage;
-}
-
-int attack(vector<int>::iterator start, vector<int>::iterator end) {
-    if (avengersAttack(start, end) == 0) return baseDamage;
-    return avengersAttack(start, end);
-
-}
-
-int destroy(vector<int>::iterator begin, 
-                vector<int>::iterator start,
-                vector<int>::iterator end) {
-
-    if (avengersAttack(start, end) == 0) return baseDamage;
-    int allDamage = attack(start, end);
-
-    if (start == end) {
-        updateDamage(allDamage);
-        return allDamage;
+    while (currIT->first <= end && currIT != avengersIndex.end()) {
+        inboundAvengerCount += currIT->second;
+        currIT++;
     }
-    
-    int length = end - start + 1;
-    auto mid = start + length / 2;
 
-    int leftDamage = destroy(begin, start, mid-1);
-    int rightDamage = destroy(begin, mid, end);
+    return inboundAvengerCount;
+}
 
+long long flick(long long start, long long end) {
+    //cout << "Test2: " << start << " " << end << " " << inboundAvengerCount << "\n";
+    long long inboundAvengerCount = getNoAvengers(start, end);
+    if (inboundAvengerCount == 0) return baseDamage;
+    else return (long long)avengersDamage * inboundAvengerCount * (end-start+1);
+}
+
+long long getDamage(long long start, long long end) {
+    //cout << "Called: " << start << " " << end << "\n";
+    if (end-start <= 0 || getNoAvengers(start, end) == 0) return flick(start, end);
+
+    auto mid = start + (end-start) / 2;
+    auto allDamage = flick(start, end);
+    auto leftDamage = getDamage(start, mid);
+    auto rightDamage = getDamage(mid+1, end);
+
+    //cout << "Damage: " << start << " " << end << " " << allDamage << " " << leftDamage << " " << rightDamage << "\n";
     return min(allDamage, leftDamage + rightDamage);
 }
 
 int main() {
     cin >> expoLength >> noAvengers >> baseDamage >> avengersDamage;
-    actualLength = 1 << expoLength;
-    avengersCount.assign(actualLength, 0);
 
     int tmp;
     for (int i=0; i<noAvengers; i++) {
         cin >> tmp;
-        avengersCount[tmp-1]++;
+        if (avengersCount.find(tmp) == avengersCount.end()) avengersCount[tmp] = 1;
+        else avengersCount[tmp]++;
     }
 
-    cout << destroy(avengersCount.begin(), avengersCount.begin(), avengersCount.end());
+    for (const auto &x: avengersCount) avengersIndex.push_back(make_pair(x.first, x.second));
+
+    cout << getDamage(1, (1 << expoLength));
 }

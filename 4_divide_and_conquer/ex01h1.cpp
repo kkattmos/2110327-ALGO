@@ -1,5 +1,5 @@
-//
-//Self Describing Sequence
+// DONE
+// Self Describing Sequence
 
 #include <iostream>
 #include <vector>
@@ -7,28 +7,26 @@
 
 using namespace std;
 
-size_t noQueries, index;
-vector<size_t> endIndex;
-// [1, 3, 5, 8]
-size_t cumulativeSum = 0; // For tracking
+int noQueries, i;
+vector<int> sequence = {1, 3};
 
-void calc(size_t index) {
-    while (*(endIndex.end()-1) > index) {
-        size_t currrentValue = endIndex.size();
-        endIndex.push_back(1 + endIndex[])
-    }
+int getIndex(int x) {
+    auto it = lower_bound(sequence.begin(), sequence.end(), x);
+    return it - sequence.begin() + 1;
+}
+
+void generate(int x) {
+    if (*(sequence.end()-1) > 2000000000) return;
+    sequence.push_back(getIndex(x) + *(sequence.end()-1));
+    generate(x+1);
 }
 
 int main() {
-    // cin >> noQueries;
-
-    endIndex.push_back(1); // a(1) = 1
-    calc(10);
-    return 0;
-
-    for (size_t i=0; i<noQueries; i++) {
-        cin >> index;
-        
-        if (lower_bound(endIndex.begin(), endIndex.end(), index) == endIndex.end()) calc(index);
+    
+    generate(3);
+    cin >> noQueries;
+    for (int _=0; _<noQueries; _++) {
+        cin >> i;
+        cout << getIndex(i) << "\n";
     }
 }
