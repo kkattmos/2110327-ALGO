@@ -1,33 +1,44 @@
-// [PPP][PPP][PPP][PPP][PPP][xxx][xxx][xxx][xxx][xxx]
+// DONE
 // GAA
 
 #include <bits/stdc++.h>
 using namespace std;
 
 int target;
-vector<int> gIndex = {1};
-int totalLength = 3;
+bool isOverbound = false;
+bool isG = false;
+int currentGPosition = 1;
 
-void generate(int k) {
-    if (totalLength > target) return;
+void check() {
+    if (target == currentGPosition) {
+        isG = true;
+        isOverbound = true;
+    }
+    else if (target < currentGPosition) {
+        isOverbound = true;
+    }
+}
 
-    int originalLength = totalLength;
-    int toAdd = gIndex.size();
-
-    gIndex.push_back(*(gIndex.end()-1) + 3);
-    totalLength += (k+3);
+void updateGPosition(int k) {
     
-    if (totalLength > target) return;
-    for (int i=0; i<toAdd; i++) gIndex.push_back(*(gIndex.begin()+i)+totalLength);
-    totalLength += originalLength;
+    if (k == 2) {
+        currentGPosition += k + 1;
+        check();
+        return;
+    }
+    if (!isOverbound) updateGPosition(k-1);
+    
+    currentGPosition += k + 1;
+    check();
 
-    generate(k+1);
+    if (!isOverbound) updateGPosition(k-1);
 }
 
 int main() {
     cin >> target;
-    generate(1);
+    //cout << "Initital: " << currentGPosition << "\n";
+    updateGPosition(100);
 
-    if (*(lower_bound(gIndex.begin(),gIndex.end(), target)) == target) cout << 'g';
+    if (isG) cout << 'g';
     else cout << 'a';
 }
