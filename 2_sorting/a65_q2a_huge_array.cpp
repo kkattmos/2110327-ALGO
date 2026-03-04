@@ -39,7 +39,10 @@ int main() {
         long long min_id = data_members_size-1;
         
         for (size_t i=not_sorted; i < data_members_size; i++) {
-            if (data_members[i] < data_members[min_id]) min_id = i; 
+            if (data_members[i] < data_members[min_id]) {
+                min_id = i;
+                cout <<"Passed";
+            } 
         }
 
         swap(data_members[not_sorted], data_members[min_id]);
