@@ -1,48 +1,51 @@
 // DONE
-// Task Planning
+// Task Planning (Redo)
 
 #include <bits/stdc++.h>
 using namespace std;
 
-int noTasks;
-vector<pair<int, vector<bool>>> prereq;
-vector<int> ans;
+int noSteps;
+vector<vector<bool>> preSteps;
+vector<int> noStepsRequired;
+
 
 int main() {
-    cin >> noTasks;
+    cin >> noSteps;
 
-    prereq.resize(noTasks);
-    for (int i=0; i<noTasks; i++) {
-        prereq[i].first = 0;
-        prereq[i].second.assign(noTasks, false);
+    preSteps.resize(noSteps);
+    noStepsRequired.assign(noSteps, 0);
 
-        int n; cin >> n;
-        for (int t=0; t<n; t++) {
-            int tmp; cin >> tmp;
-            prereq[i].second[tmp] = true;
+    for (int i=0; i<noSteps; i++) {
+        preSteps[i].assign(noSteps, false);
+        
+        int tmp; cin >> tmp;
+        noStepsRequired[i] = tmp;
+
+        for (int j=0; j<tmp; j++) {
+            int p; cin >> p;
+            preSteps[i][p] = true;
         }
-        prereq[i].first = n;
     }
 
     queue<int> toSearch;
-    for (int i=0; i<noTasks; i++) {
-        if (prereq[i].first == 0) toSearch.push(i);
+    for (int i=0; i<noSteps; i++) {
+        if (!noStepsRequired[i]) toSearch.push(i);
     }
 
-    while (!toSearch.empty()) {
+    while (!toSearch.empty())
+    {
         int currStep = toSearch.front();
-        prereq[currStep].first = -1; // The task is finished
         toSearch.pop();
-        ans.push_back(currStep);
 
-        for (int i=0; i<noTasks; i++) {
-            if (prereq[i].second[currStep]) {
-                prereq[i].second[currStep] = false;
-                prereq[i].first--;
-                if (prereq[i].first == 0) toSearch.push(i);
+        cout << currStep << " ";
+
+        for (int i=0; i<noSteps; i++) {
+            if (preSteps[i][currStep]) {
+                preSteps[i][currStep] = false;
+                if (!--noStepsRequired[i]) toSearch.push(i);
             }
         }
     }
+    
 
-    for (const auto &x: ans) cout << x << " ";
 }

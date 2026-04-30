@@ -1,79 +1,57 @@
 // DONE
-// Detecting Cycle
+// Detecting a cycle
 
 #include <bits/stdc++.h>
 using namespace std;
 
-int noGraph;
+int noQueries;
+
 int noNodes, noEdges;
-vector<vector<int>> relations;
+vector<vector<bool>> connected;
 vector<bool> visited;
 
-void print() {
-    cout << "Test: ";
-    for (const auto &x: visited) cout << x << " ";
-    cout << "\n";
-}
-
-void print2() {
-    for (int i=0; i<noNodes; i++) {
-        cout << "TEST2: " << i << " | ";
-        for (const auto &x: relations[i]) cout << x << " ";
-        cout << "\n";
-    }
-}
-
-bool iscycle(int node, int parent) {
-    visited[node] = true;
-    //print();
-    //cout << "Node: " << node << " Parent: " << parent << "\n";
-    //for (const auto &x: relations[node]) {
-    //    if (!visited[x]) return iscycle(x, node);
-    //    else if (x != parent) return true;
-    //}
-    //return false;
-
-    bool result = false;
-
-    for (const auto &x: relations[node]) {
-        if (!visited[x]) result = iscycle(x, node);
-        else if (x != parent) return true;
-
-        if (result) break;
-    }
-    return result;
-}
-
 int main() {
-    cin >> noGraph;
-    
-    for (int _=0; _<noGraph; _++) {
+    cin >> noQueries;
+
+    for (int _=0; _<noQueries; _++) {
         cin >> noNodes >> noEdges;
 
-        relations.resize(noNodes);
+        bool flagged = false;
         visited.assign(noNodes, false);
+        connected.resize(noNodes);
+        for (int i=0; i<noNodes; i++) connected[i].assign(noNodes, false);
         
         for (int i=0; i<noEdges; i++) {
-            int start, end;
-            cin >> start >> end;
-            relations[start].push_back(end);
-            relations[end].push_back(start);
+            int start, end; cin >> start >> end;
+
+            connected[start][end] = true;
+            connected[end][start] = true;
         }
 
-        //print2();
+        stack<pair<int, int>> toSearch;
+        for (int i=0; i<noNodes; i++) toSearch.push({i, -1});
 
-        bool cycleIndicator = false;
-        for (int i=0; i<noNodes; i++) {
-            if (!visited[i]) {
-                if (iscycle(i, -1)) cycleIndicator = true;
+        while (!toSearch.empty() && !flagged) {
+            int currNode = toSearch.top().first;
+            int prevNode = toSearch.top().second;
+            toSearch.pop();
+            
+            if (visited[currNode]) continue;
+            visited[currNode] = true;
+            
+            for (int i=0; i<noNodes; i++) {
+                if (connected[currNode][i]) {
+                    if (visited[i] && i != prevNode) {
+                        flagged = true;
+                        break;
+                    }
+                    if (!visited[i]) toSearch.push({i, currNode});
+                }
             }
-            if (cycleIndicator) break;
+
         }
 
-        if (cycleIndicator) cout << "YES\n";
+        if (flagged) cout << "YES\n";
         else cout << "NO\n";
-
-        relations.clear();
-        visited.clear();
     }
 }
