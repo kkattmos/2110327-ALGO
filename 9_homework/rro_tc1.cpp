@@ -83,12 +83,12 @@ void solve() {
 
         iterations++;
         if (iterations % 1000 == 0 && IS_DEBUG) {  // Print every 1000 iterations
-            cerr << "Iteration " << iterations << " | gScore=" << gScore 
+            cout << "Iteration " << iterations << " | gScore=" << gScore 
                  << " | fScore=" << fScore << " | path=" << path << "\n";
         }
 
         if (moveCount < gScore && IS_DEBUG) {
-            cout << "New move count = " << gScore << "\n";
+            //cout << "New move count = " << gScore << "\n";
             moveCount = gScore;
         }
 
@@ -161,9 +161,7 @@ void setup() {
 }
 
 void printboard() {
-    for (const auto &x: target) {
-        cout << x;
-    }
+    for (const auto &x: target) cout << x;
 }
 
 int main() {
